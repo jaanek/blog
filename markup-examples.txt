@@ -1,0 +1,246 @@
+
+http://daringfireball.net/projects/markdown/syntax
+
+
+![Book cover](/images/dccar.jpg)
+
+* [Link to the book at pragprog.com](http://pragprog.com/book/dccar/build-awesome-command-line-applications-in-ruby)
+
+<!--more-->
+
+ my system using [Puppet](http://puppetlabs.com
+"Puppet Labs home page") would save
+
+application performance testing, then I would love it if you could take a look.
+
+* [Wideload Project Page](http://github.com/tompurl/wideload "Wideload project page")
+
+Also, I am in the process of writing a free short book to help people install
+Wideload run a few tests. You can find that documentation here:
+
+* [Wideload In Perspective (Free E-book)](http://wideloadperf.org "Wideload book")
+
+This book is probably only 15% done at this point, but there should be enough
+docs to help you install and provision your Wideload VM.
+
+
+
+> I tried opening your log but it was so big that it crashed my text editor.
+
+or...
+
+> I can't read your log file. It's very large and I don't have the time to read
+> it.
+
+or finally:
+
+> Please delete all of your log files and restart your system so we can have a
+> "clean" copy of the data.
+
+If you've ever found yourself saying any of these things, then there's really
+no way to sugarcoat it: **you're doing it wrong**. Simply put, **log files
+aren't books**. They're not designed to be read from beginning to end by people
+in text editors.
+
+<!--more-->
+
+A much more accurate analogy is that log files are a lot **like tables in a
+database**.  Each row in the file is an entry in that table that uses a
+timestamp as a primary key. You then gather the information that you need from
+them by querying them using a **programming language** that can do things like
+**search, join, and filter** the results.
+
+
+
+### Basic Querying
+
+**SQL Example**:
+
+{% codeblock lang:sql %}
+
+SELECT * from foo
+
+{% endcodeblock %}
+
+**Shell Example**:
+
+{% codeblock lang:bash %}
+
+cat foo.log
+
+{% endcodeblock %}
+
+This, of course, is not the most useful query in the world. It's only
+really useful if you have only have a handful of records that can be
+easily read. What's much more useful is seeing the last 20 records that
+were created:
+
+**SQL Example**:
+
+{% codeblock lang:sql %}
+
+SELECT TOP 20 *
+  from foo
+  order by timestamp desc
+
+{% endcodeblock %}
+
+**Shell Example**:
+
+{% codeblock lang:bash %}
+
+tail foo.log
+
+{% endcodeblock %}
+
+`tail` simply shows you the last 20 lines in a file. The log file is already
+ordered by date, so we don't have to explicitly ask for that.
+
+
+{% codeblock lang:bash %}
+
+cat /var/log/syslog | awk '{print $1,$2,$3,$5}'
+
+{% endcodeblock %}
+
+...and you would get output like this:
+
+    Oct 9 07:52:37 rsyslogd:
+    Oct 9 07:54:36 anacron[10498]:
+    Oct 9 07:54:36 anacron[10498]:
+    Oct 9 07:55:02 CRON[11209]:
+    Oct 9 07:55:16 kernel:
+    Oct 9 07:55:17 kernel:
+    Oct 9 08:00:01 CRON[11231]:
+    Oct 9 08:01:09 kernel:
+
+Now what if you want to grab a bunch of space-delimited text (like a log
+message) without specifying every single column number? This is pretty easy too
+using `awk`, you just need to think about things backwards. You need to think
+of the columns that you **don't** want to see and exclude them.
+
+
+### Conclusion
+
+I hope that this tutorial has given some people the analogies that they need to
+start using more powerful shell tools to mine data from text files.  These
+tools will make most developers and sysadmins **much** more productive.
+
+I have just scratched the surface with what you can do with the tools that were
+used in this tutorial. When you are learning about them, please take a little
+bit of time to look at the `man` page and read a few tutorials. You might be
+surprised when you realize that a simple shell one-liner with the right tools
+can often do the job of a much more complex and (potentially) bug-ridden
+program written using a more conventional programming language.
+
+
+
+
+**tl;dr** Check out the links below if you want to become a better systems
+administrator or programmer. This goes double for you if you work in a
+corporate environment on .Net or Java systems and want to understand what all
+of the kids are doing :-)
+
+I just finished reading
+[Working With Unix Processes](http://workingwithunixprocesses.com/)
+(my [review](http://tompurl.com/2012/06/21/review-of-working-with-unix-processes/)),
+and I really found it to be a fascinating overview of the Unix process model and API.
+The most interesting part for me was that you could use the `fork` syscall and Ruby
+to write concurrent programs that avoid a lot of the complexity that you can have
+when you use threads.
+
+<!--more-->
+
+I therefore did some research on one of the projects that was covered in the
+book called [Unicorn](http://unicorn.bogomips.org/). This led me to the following
+articles:
+
+* [Unicorn!](https://github.com/blog/517-unicorn)
+* [Everything You Need to Know About Unicorn](http://www.engineyard.com/blog/2010/everything-you-need-to-know-about-unicorn/)
+* [I Like Unicorn Because It's Unix](http://tomayko.com/writings/unicorn-is-unix)
+  * [related discussion on Hacker News](http://news.ycombinator.com/item?id=865306)
+
+Most of the systems I've administered have run on multiple J2EE servers that
+sat behind some kind of load balancer, so the designs that are described in
+those articles are very different and interesting to me. For example, who knew
+that you could make multiple app servers listen on a single port and load
+balance using the kernel?
+
+One statement in the "I Like Unicorn" article really stood out to me:
+
+> You can use processes, or async/events, or both processes and async/events,
+> but definitely not threads. Threads are out.
+
+Regardless of whether this statement is valid, it was confusing to me because
+the only concurrent programming that I've ever done used Java and threads. The
+*Working With Unix Processes* book covered multi-process programming for me,
+but what is the "async/events" method of concurrency?
+
+This led me to the [Twisted Framework](http://twistedmatrix.com/), which is a
+very robust Python library for building networked applications that use
+asynchronous IO. The documentation on the official web site was a little confusing, so I was
+*very* grateful to find this:
+
+* [Twisted Introduction](http://krondo.com/?page_id=1327)
+
+Before I continue, I need to say that this is one of the
+**best introductory books I have ever read**. It does an *excellent* job easing
+you into the world of asynchronous IO, and it possesses a wonderful balance
+between breadth and simplicity. Regardless of whether you plan on ever writing
+a non-trivial Python or Twisted application, you would be hard pressed to find a
+
+
+This led me to the [Twisted Framework](http://twistedmatrix.com/), which is a
+very robust Python library for building networked applications that use
+asynchronous IO. The documentation on the official web site was a little confusing, so I was
+*very* grateful to find this:
+
+* [Twisted Introduction](http://krondo.com/?page_id=1327)
+
+Before I continue, I need to say that this is one of the
+**best introductory books I have ever read**. It does an *excellent* job easing
+you into the world of asynchronous IO, and it possesses a wonderful balance
+between breadth and simplicity. Regardless of whether you plan on ever writing
+a non-trivial Python or Twisted application, you would be hard pressed to find a
+better book on asynchronous IO *anywhere*.
+
+Oh, and the best part is that it's **FREE**. The author released the "chapters"
+as blog posts for free on his site. You can choose to read the
+[HTML version](http://krondo.com/?page_id=1327), and you can even download a
+[PDF version](http://krondo.com/wp-content/uploads/2009/08/twisted-intro.pdf).
+
+## So Why Read All Of This?
+
+**If you're a sysadmin**, then you are probably already working with software
+that uses one of these concurrency methods. Knowing how they work at a high
+level will make you better at your current job and help you get a new job in
+the future.
+
+Also, Twisted really looks like a dream framework for sysadmins. I'm really
+looking forward to using it's network API to write some concurrent clients and
+"mini-servers".
+
+**If you're a programmer**, then it can be very useful to know *all* of the
+different ways to add concurrency to your programs. Threads are great, and
+there are a lot of use cases where they make the most sense, but it's not the
+only tool in your toolbox. A lot of very interesting problems are being solved
+using the techniques listed above.
+
+## Links again
+
+So here's the "Cool Kids' Concurrency" reading list, just in time for Summer:
+
+### Multi-Process Method
+
+* [Working With Unix Processes](http://workingwithunixprocesses.com/)
+* [Unicorn!](https://github.com/blog/517-unicorn)
+* [Everything You Need to Know About Unicorn](http://www.engineyard.com/blog/2010/everything-you-need-to-know-about-unicorn/)
+* [I Like Unicorn Because It's Unix](http://tomayko.com/writings/unicorn-is-unix)
+
+
+### Asynchronous IO Method
+
+* [Twisted Introduction](http://krondo.com/?page_id=1327)
+
+I hope that you enjoy it all as much as I am.
+
